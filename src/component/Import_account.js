@@ -16,7 +16,7 @@ const ImportAccount = ({ address, handleAddressUpdate }) => {
 
     const handleSubmittedMnemonic = () => {
         const keypair = algosdk.mnemonicToSecretKey(inputMnemonic);
-        handleAddressUpdate({ addr: keypair.addr, sk: algosdk.secretKeyToMnemonic(keypair.sk) });
+        handleAddressUpdate({ addr: keypair.addr, sk: keypair.sk });
     };
     return (
         <div>
@@ -24,7 +24,7 @@ const ImportAccount = ({ address, handleAddressUpdate }) => {
                 !address && (
                     <div>
                         <input type="text" value={inputMnemonic} onChange={handleMnemonicProvided} />
-                        <button onClick={handleSubmittedMnemonic}>Get Input Value</button>
+                        <button onClick={handleSubmittedMnemonic}>Add Address</button>
                     </div>
                 )
             }

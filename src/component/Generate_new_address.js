@@ -1,37 +1,33 @@
 import algosdk from "algosdk";
 const showConfirmation = () => {
-  const result = window.confirm('Do you want to proceed?');
-  console.log(result)
-  return result;
+    const result = window.confirm('Do you want to proceed?');
+    return result;
 };
-const GenerateNewAddress = ({address, handleAddressUpdate}) => {
+const GenerateNewAddress = ({ address, handleAddressUpdate }) => {
     const generateAddress = () => {
-      const account = algosdk.generateAccount();
-      handleAddressUpdate({ addr: account.addr, sk: algosdk.secretKeyToMnemonic(account.sk) });
+        const account = algosdk.generateAccount();
+        handleAddressUpdate({ addr: account.addr, sk: account.sk });
     };
-    const handleconfirmation = ()=>{
-      const result = showConfirmation();
-      return result? generateAddress() :null
+    const handleconfirmation = () => {
+        const result = showConfirmation();
+        return result ? generateAddress() : null
     }
+    console.log(address)
     return (
-      <div>
-        {
-          !address && (
-            <button onClick={generateAddress}>Generate Address</button>
-          )
-        }
-        
-        {address && (
-          <div>
-            <div>Address: {address.addr}</div>
-            <div>Secret Key: {address.sk}</div>
-  
-            <button onClick={handleconfirmation}>Generate New</button>
-          </div>
-          
-        )}
-      </div>
+        <div>
+            {
+                !address && (
+                    <button onClick={generateAddress} className="nav-link">Generate Address</button>
+                )
+            }
+
+            {address && (                
+                   
+                <button onClick={handleconfirmation} className="dropdown-item">Generate New</button>
+                              
+            )}
+        </div>
     );
-  };
-  
+};
+
 export default GenerateNewAddress;
