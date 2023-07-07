@@ -1,17 +1,17 @@
 import './App.css';
 import React, { useState, useEffect } from 'react';
-import ImportAccount from './component/Import_account';
 import SendAlgo from './component/sendAlgo';
 import CreateASA from './component/CreateASA';
 import NavMain from './component/NavBar';
-
 import { api_base } from './utils/AlgorandUtils';
 import algosdk from 'algosdk';
 
 
 function App() {
     const [address, setAddress] = useState(null);
-    const [currBalace, setCurrBalance] = useState(null);
+    const [currBalance, setCurrBalance] = useState(null);
+    const [isLoading, setisLoading] = useState(false);
+
 
     const handleAddressUpdate = (address) => {
         setAddress(address)
@@ -27,11 +27,11 @@ function App() {
                     <h3>
                         {"Welcome " + address.addr.slice(0, 5) + "..."}
                     </h3>
-                    <span className='ms-auto fw-bold'>Balance: <strong>{isLoading ? "Loading..." : + (currBalace / 1000000).toFixed(2) + " ALGO"}</strong> </span>
+                    <span className='ms-auto fw-bold'>Balance: <strong>{isLoading ? "Loading..." : + (currBalance / 1000000).toFixed(2) + " ALGO"}</strong> </span>
                 </div>
             )
         } else {
-            return (<h3>Add your seed here...</h3>)
+            return (<h3>Hey Stranger...</h3>)
         }
     }
 
@@ -74,7 +74,7 @@ function App() {
     const viewKeyModalTrigger = () => {
         return (<button type="button" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#viewKeyModalMain">View Keys</button>)
     }
-    const [isLoading, setisLoading] = useState(false);
+    
 
     useEffect(() => {
         if (address != null) {
@@ -94,47 +94,86 @@ function App() {
 
     }, [address]);
 
-
+    const AboutMe = () => {
+        return (
+            <div className='card-body bg-light '>
+                <div className='card-title'>
+                    Hey There!
+                </div>
+                <div className='card-text'>
+                    <ul>
+                        <li>Feel free to clone and tweak as needed.</li>
+                        <li>Components are made using basic React and styled using Bootstrap Framework.</li>
+                        <li>Instead of creating everything from start, you can just copy-paste most of them as required.</li>
+                        <li>
+                            <div className='d-flex'>
+                                Reach out to me at:
+                                <address>
+                                    <a href="mailto:destinier.kunal34@gmail.com" className='text-decoration-none mx-2'>E-Mail</a>
+                                    <a href="https://www.linkedin.com/in/kunal-mahajan-8592a3212" rel="noreferrer" target="_blank" className='text-decoration-none mx-2'>LinkedIn</a>
+                                </address>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        )
+    }
     return (
         <>
             {viewKeyModal()}
             <NavMain address={address} handleAddressUpdate={handleAddressUpdate} viewKeyModalTrigger={viewKeyModalTrigger} />
-            <div className="card m-3">
-                <div className='card-header'>
-                    {welcomeAndGetBalance()}
-                </div>
-                <div className='card-body'>
-                    <ImportAccount address={address} handleAddressUpdate={handleAddressUpdate} />
-                    {address && (
-                        <>
-                            <p>
-                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForSendAlgo" aria-expanded="false" aria-controls="collapseForSendAlgo">
-                                    Send ALGO
-                                </button>
-                                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseForCreateASA" aria-expanded="false" aria-controls="collapseForCreateASA">
-                                    Send ALGO
-                                </button>
-                            </p>
-                            <div class="collapse" id="collapseForSendAlgo">
-                                <div class="card card-body">
-                                     <SendAlgo pub_key={address.addr} sec_key={address.sk} />
-                                </div>
-                            </div>
-                            <div class="collapse" id="collapseForCreateASA">
-                                <div class="card card-body">
-                                    <CreateASA pub_key={address.addr} sec_key={address.sk} />
-                                </div>
-                            </div>
-                            <br />
-                            
-                            
-                        </>
-                    )
-                    }
 
-                </div>
-            </div>
+            {address &&
+                (
+                    <div className="card m-3">
+                        <div className='card-header'>
+                            {welcomeAndGetBalance()}
+                        </div>
+                        <div className='card-body'>
+                            {address && (
+                                <>
+                                    <ul className="nav nav-tabs" role="tablist">
+                                        <li className="nav-item" role="presentation">
+                                            <a className="nav-link active" data-bs-toggle="tab" aria-controls="AboutMe" href="#AboutMe">About</a>
+                                        </li>
+                                        <li className="nav-item" role="presentation">
+                                            <a className="nav-link" data-bs-toggle="tab" aria-controls="collapseForSendAlgo" href="#collapseForSendAlgo">Send Algo</a>
+                                        </li>
+                                        <li className="nav-item" role="presentation">
+                                            <a className="nav-link disabled" data-bs-toggle="tab" aria-controls="collapseForCreateASA" href="#collapseForCreateASA">Create ASA</a>
+                                        </li>
+                                    </ul>
+                                    <div className="tab-content mt-1 mb-2">
+                                        <div role="tabpanel" className="tab-pane fade show active card" id="AboutMe">
+                                            {AboutMe()}
+                                        </div>
 
+                                        <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
+                                            <SendAlgo pub_key={address.addr} sec_key={address.sk} currBalance={currBalance} />
+                                        </div>
+
+                                        <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForCreateASA">
+                                            <CreateASA pub_key={address.addr} sec_key={address.sk} />
+                                        </div>
+                                    </div>
+                                </>
+                            )
+                            }
+                        </div>
+                    </div>
+                )
+
+            }
+
+            {!address && (
+                <>
+                    <h3 className='m-3'>Import or Generate New Account from the provided buttons on Navigation Bar</h3>
+                    <div className='card m-3'>
+                        {AboutMe()}
+                    </div>
+                </>
+            )}
 
         </>
     );

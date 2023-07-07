@@ -2,9 +2,8 @@ import algosdk from "algosdk";
 import { algodClient } from "../utils/AlgorandUtils";
 import { useState } from "react";
 
-const SendAlgo = ({ pub_key, sec_key }) => {
+const SendAlgo = ({ pub_key, sec_key, currBalance }) => {
     const [formData, setFormData] = useState({ "recPub": "", "message": "", "amount": "" })
-
     const handleFormData = (event) => {
         const { name, value } = event.target
         setFormData((prevFormData) => ({
@@ -19,17 +18,23 @@ const SendAlgo = ({ pub_key, sec_key }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        sendAlgoUtil().then((result) => {
-            if (result === 1) {
-                clearForm();
-            }
-        })
+
+        if (currBalance < (formData.amount * 100000)) {
+            alert("Not Enough balance available!!!!")
+            return
+        } else {
+            sendAlgoUtil().then((result) => {
+                if (result !== -1) {
+                    alert("Transaction Successful!!! " + result)
+                    clearForm();
+                }
+            })
+        }
 
     }
 
     const sendAlgoUtil = async () => {
 
-        console.log(formData)
         try {
             const params = await algodClient.getTransactionParams().do();
             const txn = {
@@ -48,7 +53,7 @@ const SendAlgo = ({ pub_key, sec_key }) => {
             // Submit the transaction
             const txId = await algodClient.sendRawTransaction(signedTxn.blob).do();
             console.log('Transaction successful! Transaction ID:', txId);
-            return 1;
+            return txId;
         } catch (error) {
             console.log('An error occurred:', error);
             return -1;
@@ -70,17 +75,11 @@ const SendAlgo = ({ pub_key, sec_key }) => {
                         </div>
                         <div className="mb-3">
                             <label htmlFor="messageInput" className="form-label">Optional Note</label>
-                            <textarea className="form-control" name="message" id="messageInput" rows="3"  value={formData.message} onChange={handleFormData}></textarea>
+                            <textarea className="form-control" name="message" id="messageInput" rows="3" value={formData.message} onChange={handleFormData}></textarea>
                         </div>
                         <div className="mb-3 row justify-content-center">
-                            
-                                <button type="submit" className="btn btn-primary col-4 mx-2">Submit</button>
-                            
-                            
-                                <button type="button" onClick={clearForm} className="btn btn-warning col-4 mx-2">Clear</button> 
-                            
-                        
-                        
+                            <button type="submit" className="btn btn-primary col-4 mx-2">Submit</button>
+                            <button type="button" onClick={clearForm} className="btn btn-warning col-4 mx-2">Clear</button>
                         </div>
                     </form>
                 )

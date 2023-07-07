@@ -1,5 +1,5 @@
 import GenerateNewAddress from "./Generate_new_address"
-
+import ImportAccount from "./Import_account"
 const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
 
     const LogoutUser = () => {
@@ -7,10 +7,12 @@ const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
     }
 
     return (
-        <section id="navbar_main_section">
+        <>
+            <ImportAccount address={address} handleAddressUpdate={handleAddressUpdate} />
+            <section id="navbar_main_section">
             <nav className="navbar navbar-expand-md bg-dark border-bottom border-bottom-dark  sticky-top p-3 " data-bs-theme="dark" role="navigation">
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="#"><h5 className=" mt-0 mb-0">REACT COMPONENT</h5></a>
+                    <a className="navbar-brand" href="https://github.com/sudo-Kunal-Mahajan"><h5 className=" mt-0 mb-0">REACT COMPONENT</h5></a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -22,10 +24,10 @@ const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
                             {
                                 address && (
                                     <li className="nav-item dropdown ">
-                                        <a className="nav-link dropdown-toggle" href="#" id="navbar_profile_link" role="button"
+                                        <button className="nav-link dropdown-toggle" id="navbar_profile_link" 
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                             <img src='/profile.png' width="20" alt="profile" />
-                                        </a>
+                                        </button>
                                         <ul className="dropdown-menu dropdown-menu-end" style={{ right: 0 }} aria-labelledby="navbar_profile_link">
                                             <li>
                                                 {viewKeyModalTrigger()}
@@ -47,10 +49,14 @@ const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
                                 )
                             }
                             {!address && (
-                               
+                                <>
+                               <li className="nav-item">
+                                    <button type="button" className="nav-link" data-bs-toggle="modal" data-bs-target="#addAccountSeed">Import Account</button>
+                               </li>
                                 <li className="nav-item ">
                                     <GenerateNewAddress address={address} handleAddressUpdate={handleAddressUpdate} />
                                 </li>
+                                </>
                                 
                             )}
                         </ul>
@@ -61,6 +67,8 @@ const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
                 </div>
             </nav>
         </section>
+        </>
+        
     )
 }
 
