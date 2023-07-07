@@ -1,13 +1,14 @@
 import GenerateNewAddress from "./Generate_new_address"
 
-const NavMain = ({ address, handleAddressUpdate }) => {
+const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
 
     const LogoutUser = () => {
         handleAddressUpdate(null)
     }
+
     return (
         <section id="navbar_main_section">
-            <nav className="navbar navbar-expand-md sticky-top p-3 " role="navigation">
+            <nav className="navbar navbar-expand-md bg-dark border-bottom border-bottom-dark  sticky-top p-3 " data-bs-theme="dark" role="navigation">
                 <div className="container-fluid">
                     <a className="navbar-brand" href="#"><h5 className=" mt-0 mb-0">REACT COMPONENT</h5></a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -27,6 +28,12 @@ const NavMain = ({ address, handleAddressUpdate }) => {
                                         </a>
                                         <ul className="dropdown-menu dropdown-menu-end" style={{ right: 0 }} aria-labelledby="navbar_profile_link">
                                             <li>
+                                                {viewKeyModalTrigger()}
+                                            </li>
+                                            <li>
+                                                <hr className="dropdown-divider" />
+                                            </li>
+                                            <li>
                                                 <GenerateNewAddress address={address} handleAddressUpdate={handleAddressUpdate} />
                                             </li>
                                             <li>
@@ -40,12 +47,10 @@ const NavMain = ({ address, handleAddressUpdate }) => {
                                 )
                             }
                             {!address && (
-                                <>
+                               
                                 <li className="nav-item ">
-                                <GenerateNewAddress address={address} handleAddressUpdate={handleAddressUpdate} />
+                                    <GenerateNewAddress address={address} handleAddressUpdate={handleAddressUpdate} />
                                 </li>
-                                
-                                </>
                                 
                             )}
                         </ul>

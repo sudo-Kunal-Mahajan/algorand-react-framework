@@ -12,9 +12,8 @@ const GenerateNewAddress = ({ address, handleAddressUpdate }) => {
         const result = showConfirmation();
         return result ? generateAddress() : null
     }
-    console.log(address)
     return (
-        <div>
+            <>
             {
                 !address && (
                     <button onClick={generateAddress} className="nav-link">Generate Address</button>
@@ -26,7 +25,7 @@ const GenerateNewAddress = ({ address, handleAddressUpdate }) => {
                 <button onClick={handleconfirmation} className="dropdown-item">Generate New</button>
                               
             )}
-        </div>
+        </>
     );
 };
 
