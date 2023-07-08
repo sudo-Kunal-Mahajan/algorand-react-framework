@@ -2,7 +2,8 @@ import algosdk from "algosdk";
 import { algodClient } from "../utils/AlgorandUtils";
 import { useState } from "react";
 
-const SendAlgo = ({ pub_key, sec_key, currBalance }) => {
+const SendAlgo = ({ pub_key, sec_key, maxAllowedSend }) => {
+    console.log(maxAllowedSend)
     const [formData, setFormData] = useState({ "recPub": "", "message": "", "amount": "" })
     const handleFormData = (event) => {
         const { name, value } = event.target
@@ -19,7 +20,7 @@ const SendAlgo = ({ pub_key, sec_key, currBalance }) => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        if (currBalance < (formData.amount * 100000)) {
+        if (maxAllowedSend < (formData.amount * 100000 + 1000)) {
             alert("Not Enough balance available!!!!")
             return
         } else {
@@ -56,6 +57,7 @@ const SendAlgo = ({ pub_key, sec_key, currBalance }) => {
             return txId;
         } catch (error) {
             console.log('An error occurred:', error);
+            alert("An error occurred: " + error);
             return -1;
         }
 

@@ -3,23 +3,19 @@ import React, { useState, useEffect } from 'react';
 import SendAlgo from './component/sendAlgo';
 import CreateASA from './component/CreateASA';
 import NavMain from './component/NavBar';
-import { api_base } from './utils/AlgorandUtils';
+import AssetDisplay from './component/AccountInfo';
 import algosdk from 'algosdk';
+import { algodClient } from './utils/AlgorandUtils';
 
 
 function App() {
-    const [address, setAddress] = useState(null);
-    const [currBalance, setCurrBalance] = useState(null);
+    const [accountInfo, setAccountInfo] = useState(null);
     const [isLoading, setisLoading] = useState(false);
-
+    const [address, setAddress] = useState(null);
 
     const handleAddressUpdate = (address) => {
         setAddress(address)
     }
-    const handleCurrBalanceUpdate = (balance) => {
-        setCurrBalance(balance)
-    }
-
     const welcomeAndGetBalance = () => {
         if (address) {
             return (
@@ -27,7 +23,15 @@ function App() {
                     <h3>
                         {"Welcome " + address.addr.slice(0, 5) + "..."}
                     </h3>
-                    <span className='ms-auto fw-bold'>Balance: <strong>{isLoading ? "Loading..." : + (currBalance / 1000000).toFixed(2) + " ALGO"}</strong> </span>
+                    <div className='ms-auto '>
+                        <span>
+                            Balance: <strong>{isLoading ? "Loading..." : + ((accountInfo ? accountInfo["amount"] : 0) / 1000000).toFixed(2) + " ALGO"}</strong>
+                        </span>
+                        <br />
+                        <span>
+                            Min Balance: {isLoading ? "Loading..." : + ((accountInfo ? accountInfo["min-balance"] : 0) / 1000000).toFixed(2) + " ALGO"}
+                        </span>
+                    </div>
                 </div>
             )
         } else {
@@ -74,22 +78,24 @@ function App() {
     const viewKeyModalTrigger = () => {
         return (<button type="button" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#viewKeyModalMain">View Keys</button>)
     }
-    
+
+
 
     useEffect(() => {
         if (address != null) {
             setisLoading(true)
-            fetch(api_base + "/v2/accounts/" + address.addr, { headers: { 'Accept': 'application/json' } })
-                .then(response => response.json())
-                .then(jsonData => {
-                    handleCurrBalanceUpdate(jsonData["amount"])
+            const fetchAssets = async () => {
+                try {
+                    const accountInfo = await algodClient.accountInformation(address.addr).do();
+                    console.log(accountInfo)
+                    setAccountInfo(accountInfo)
                     setisLoading(false)
-                })
-                .catch(error => {
-                    handleCurrBalanceUpdate(0)
-                    console.error('Error fetching data:', error);
+                } catch (error) {
+                    console.error('Error fetching assets:', error);
                     setisLoading(false)
-                });
+                }
+            }
+            fetchAssets();
         }
 
     }, [address]);
@@ -137,6 +143,10 @@ function App() {
                                         <li className="nav-item" role="presentation">
                                             <a className="nav-link active" data-bs-toggle="tab" aria-controls="AboutMe" href="#AboutMe">About</a>
                                         </li>
+
+                                        <li className="nav-item" role="presentation">
+                                            <a className="nav-link" data-bs-toggle="tab" aria-controls="collapseForYourAccount" href="#collapseForYourAccount">Your Account</a>
+                                        </li>
                                         <li className="nav-item" role="presentation">
                                             <a className="nav-link" data-bs-toggle="tab" aria-controls="collapseForSendAlgo" href="#collapseForSendAlgo">Send Algo</a>
                                         </li>
@@ -149,8 +159,12 @@ function App() {
                                             {AboutMe()}
                                         </div>
 
+                                        <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForYourAccount">
+                                            <AssetDisplay publicAddress={address.addr} accountInfo={accountInfo} />
+                                        </div>
+
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
-                                            <SendAlgo pub_key={address.addr} sec_key={address.sk} currBalance={currBalance} />
+                                            <SendAlgo pub_key={address.addr} sec_key={address.sk} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForCreateASA">
