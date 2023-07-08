@@ -16,7 +16,7 @@ const ImportAccount = ({ address, handleAddressUpdate }) => {
 
     const handleSubmittedMnemonic = () => {
         const keypair = algosdk.mnemonicToSecretKey(inputMnemonic);
-        handleAddressUpdate({ addr: keypair.addr, sk: keypair.sk });
+        handleAddressUpdate({ addr: keypair.addr, mnemonic: inputMnemonic });
         setinputMnemonic("");
     };
     return (

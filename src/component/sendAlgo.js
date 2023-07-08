@@ -3,7 +3,6 @@ import { algodClient } from "../utils/AlgorandUtils";
 import { useState } from "react";
 
 const SendAlgo = ({ pub_key, sec_key, maxAllowedSend }) => {
-    console.log(maxAllowedSend)
     const [formData, setFormData] = useState({ "recPub": "", "message": "", "amount": "" })
     const handleFormData = (event) => {
         const { name, value } = event.target

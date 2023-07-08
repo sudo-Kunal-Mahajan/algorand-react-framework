@@ -6,7 +6,7 @@ const showConfirmation = () => {
 const GenerateNewAddress = ({ address, handleAddressUpdate }) => {
     const generateAddress = () => {
         const account = algosdk.generateAccount();
-        handleAddressUpdate({ addr: account.addr, sk: account.sk });
+        handleAddressUpdate({ addr: account.addr, mnemonic: algosdk.secretKeyToMnemonic(account.sk) });
     };
     const handleconfirmation = () => {
         const result = showConfirmation();

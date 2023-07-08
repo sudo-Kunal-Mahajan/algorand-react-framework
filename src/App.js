@@ -4,8 +4,8 @@ import SendAlgo from './component/sendAlgo';
 import CreateASA from './component/CreateASA';
 import NavMain from './component/NavBar';
 import AssetDisplay from './component/AccountInfo';
-import algosdk from 'algosdk';
 import { algodClient } from './utils/AlgorandUtils';
+import algosdk from 'algosdk';
 
 
 function App() {
@@ -14,8 +14,15 @@ function App() {
     const [address, setAddress] = useState(null);
 
     const handleAddressUpdate = (address) => {
-        setAddress(address)
+        localStorage.removeItem("address")
+        localStorage.setItem("address", JSON.stringify(address))    
+        setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
     }
+
+    useEffect(() => {
+        setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
+    }, [])
+
     const welcomeAndGetBalance = () => {
         if (address) {
             return (
@@ -59,7 +66,7 @@ function App() {
                                     <br />
                                     <div className='row'>
                                         <div className='col-12'>
-                                            Private Key (Mnemonic): {address && algosdk.secretKeyToMnemonic(address.sk)}
+                                            Private Key (Mnemonic): {address && address.mnemonic }
                                         </div>
                                     </div>
                                 </div>
@@ -87,8 +94,7 @@ function App() {
             const fetchAssets = async () => {
                 try {
                     const accountInfo = await algodClient.accountInformation(address.addr).do();
-                    console.log(accountInfo)
-                    setAccountInfo(accountInfo)
+                    setAccountInfo(accountInfo["account"])
                     setisLoading(false)
                 } catch (error) {
                     console.error('Error fetching assets:', error);
@@ -164,11 +170,11 @@ function App() {
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
-                                            <SendAlgo pub_key={address.addr} sec_key={address.sk} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
+                                            <SendAlgo pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForCreateASA">
-                                            <CreateASA pub_key={address.addr} sec_key={address.sk} />
+                                            <CreateASA pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} />
                                         </div>
                                     </div>
                                 </>
