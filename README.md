@@ -16,3 +16,8 @@ This project was created as a guide/reference for devs to create UI for their Al
 - Run `npm start` to start the project.
 
 
+## contact
+- [LinkedIn](https://www.linkedin.com/in/kunal-mahajan-8592a3212)
+- [Mail](mailto:destinier.kunal34@gmail.com)
+
+

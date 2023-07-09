@@ -1,31 +1,17 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-
+import { algoIndexer } from '../utils/AlgorandUtils';
 
 const AssetDisplay = ({ publicAddress, accountInfo }) => {
     const assets = accountInfo ? accountInfo.assets : [];
     const [isLoading, setIsLoading] = useState(false);
     const [transactions, setTransactions] = useState(null);
-
     useEffect(() => {
         async function getTransactions() {
             setIsLoading(true);
-            try {
-                fetch("https://testnet-algorand.api.purestake.io/idx2/v2/accounts/" + publicAddress + "/transactions", {
-                    headers: {
-                        'X-API-Key': process.env.REACT_APP_PURE_STAKE_API_KEY
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        setTransactions(data.transactions);
-                        setIsLoading(false);
-
-                    });
-            } catch (error) {
-                console.error('Error fetching assets:', error);
-                setIsLoading(false);
-            }
+            const transaction_info = await algoIndexer.lookupAccountTransactions(publicAddress).do();
+            setTransactions(transaction_info["transactions"]);
+            setIsLoading(false);
         }
         getTransactions();
     }, [publicAddress]);
@@ -100,7 +86,6 @@ const AssetDisplay = ({ publicAddress, accountInfo }) => {
                     </div>
                 </div>
             ) : ""}
-
             <div className='card mt-3'>
                 <div className='card-header'>
                     <h4>Your Transactions</h4>
@@ -154,6 +139,7 @@ const AssetDisplay = ({ publicAddress, accountInfo }) => {
                     }
                 </div>
             </div>
+            
         </>
     );
 }

@@ -7,22 +7,23 @@ import algosdk from "algosdk";
 //Uncomment the following for Algonode API
 
 
-// export const api_base  = "https://testnet-api.algonode.cloud"
-// const algodToken = ''; // Replace with your Algod API token
-// const algodServer = api_base; // Replace with your Algorand node URL
-// export const algodClient = new algosdk.Algodv2(algodToken, algodServer, 443);
+const algod_api_base  = "https://testnet-api.algonode.cloud"
+const indexer_base = "https://testnet-idx.algonode.cloud"
+const token = ''; 
+const port = '';
+export const which_api = "Algonode API (TestNet)"
 
 
 // #########################################################
-
-
+//Uncomment the following for PureStake API
 // Support for PureStake API
-const baseServer = 'https://testnet-algorand.api.purestake.io/idx2'
-const port = '';
+// const api_base = 'https://testnet-algorand.api.purestake.io/ps2'
+// const indexer_base = 'https://testnet-algorand.api.purestake.io/idx2'
+// const token = {
+//     'X-API-Key': process.env.REACT_APP_PURE_STAKE_API_KEY
+// }
+// export const which_api = "PureStake API (TestNet)"
 
-const token = {
-    'X-API-Key': process.env.REACT_APP_PURE_STAKE_API_KEY
-}
-console.log(process.env)
-const algodclient = new algosdk.Algodv2(token, baseServer, port);
-export const algodClient = algodclient;
+
+export const algodClient = new algosdk.Algodv2(token, algod_api_base, port);
+export const algoIndexer= new algosdk.Indexer(token, indexer_base, port);

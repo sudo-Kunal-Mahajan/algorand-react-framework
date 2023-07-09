@@ -4,8 +4,9 @@ import SendAlgo from './component/sendAlgo';
 import CreateASA from './component/CreateASA';
 import NavMain from './component/NavBar';
 import AssetDisplay from './component/AccountInfo';
-import { algodClient } from './utils/AlgorandUtils';
+import { algodClient, which_api } from './utils/AlgorandUtils';
 import algosdk from 'algosdk';
+import FooterMain from './component/Footer';
 
 
 function App() {
@@ -15,7 +16,7 @@ function App() {
 
     const handleAddressUpdate = (address) => {
         localStorage.removeItem("address")
-        localStorage.setItem("address", JSON.stringify(address))    
+        localStorage.setItem("address", JSON.stringify(address))
         setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
     }
 
@@ -66,7 +67,7 @@ function App() {
                                     <br />
                                     <div className='row'>
                                         <div className='col-12'>
-                                            Private Key (Mnemonic): {address && address.mnemonic }
+                                            Private Key (Mnemonic): {address && address.mnemonic}
                                         </div>
                                     </div>
                                 </div>
@@ -86,15 +87,13 @@ function App() {
         return (<button type="button" className="dropdown-item" data-bs-toggle="modal" data-bs-target="#viewKeyModalMain">View Keys</button>)
     }
 
-
-
     useEffect(() => {
         if (address != null) {
             setisLoading(true)
             const fetchAssets = async () => {
                 try {
                     const accountInfo = await algodClient.accountInformation(address.addr).do();
-                    setAccountInfo(accountInfo["account"])
+                    setAccountInfo(accountInfo)
                     setisLoading(false)
                 } catch (error) {
                     console.error('Error fetching assets:', error);
@@ -131,11 +130,13 @@ function App() {
             </div>
         )
     }
+
     return (
         <>
             {viewKeyModal()}
             <NavMain address={address} handleAddressUpdate={handleAddressUpdate} viewKeyModalTrigger={viewKeyModalTrigger} />
 
+            <div className="flex-grow-1">
             {address &&
                 (
                     <div className="card m-3">
@@ -166,7 +167,7 @@ function App() {
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForYourAccount">
-                                            <AssetDisplay publicAddress={address.addr} accountInfo={accountInfo} />
+                                            <AssetDisplay publicAddress={address.addr} accountInfo={accountInfo}/>
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
@@ -183,7 +184,6 @@ function App() {
                         </div>
                     </div>
                 )
-
             }
 
             {!address && (
@@ -194,7 +194,8 @@ function App() {
                     </div>
                 </>
             )}
-
+            </div>
+            <FooterMain which_api={which_api} />
         </>
     );
 }
