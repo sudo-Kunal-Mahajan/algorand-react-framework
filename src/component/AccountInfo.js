@@ -25,7 +25,7 @@ const AssetDisplay = ({ publicAddress, accountInfo }) => {
                 <div className='card-body'>
                     
                     {(assets && assets.length > 0) ? (
-                        <div className='container-fluid table-responsive'>
+                        <div className='container-fluid table-responsive' >
                             <table className='table table-striped '>
                                 <thead className='align-middle '>
                                     <tr>
@@ -86,7 +86,7 @@ const AssetDisplay = ({ publicAddress, accountInfo }) => {
                     </div>
                 </div>
             ) : ""}
-            <div className='card mt-3'>
+            <div className='card mt-3  '>
                 <div className='card-header'>
                     <h4>Your Transactions</h4>
                 </div>
@@ -94,8 +94,7 @@ const AssetDisplay = ({ publicAddress, accountInfo }) => {
                     {isLoading ? <p>Loading...</p> : <>
                         {transactions && transactions.length > 0 ? (
                             //prevent the bootstrap table from going out of bounds
-
-                            <div className='container-fluid table-responsive'>
+                            <div className='container-fluid table-responsive' style={{ maxHeight: '300px', overflowY: 'scroll' }}>
                                 <table className='table table-striped '>
                                     <thead className='align-middle '>
                                         <tr>

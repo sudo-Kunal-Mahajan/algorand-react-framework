@@ -1,6 +1,6 @@
 # React SDK for Algorand
 
-This project was created as a guide/reference for devs to create UI for their Algorand Apps.
+This project is created as a guide/reference for devs to create UI for their Algorand Apps.
 
 ## How to?
 
@@ -17,6 +17,7 @@ This project was created as a guide/reference for devs to create UI for their Al
 
 
 ## contact
+Let me know if you have any queries or suggestions. Send out a pull request if you want to contribute.
 - [LinkedIn](https://www.linkedin.com/in/kunal-mahajan-8592a3212)
 - [Mail](mailto:destinier.kunal34@gmail.com)
 

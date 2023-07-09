@@ -13,6 +13,7 @@ function App() {
     const [accountInfo, setAccountInfo] = useState(null);
     const [isLoading, setisLoading] = useState(false);
     const [address, setAddress] = useState(null);
+    const [isStale,setIsStale] = useState(false);
 
     const handleAddressUpdate = (address) => {
         localStorage.removeItem("address")
@@ -20,32 +21,14 @@ function App() {
         setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
     }
 
+    const handleIsStale = () => {
+       setIsStale(true)
+    }
+
     useEffect(() => {
         setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
     }, [])
 
-    const welcomeAndGetBalance = () => {
-        if (address) {
-            return (
-                <div className="d-flex align-items-center">
-                    <h3>
-                        {"Welcome " + address.addr.slice(0, 5) + "..."}
-                    </h3>
-                    <div className='ms-auto '>
-                        <span>
-                            Balance: <strong>{isLoading ? "Loading..." : + ((accountInfo ? accountInfo["amount"] : 0) / 1000000).toFixed(2) + " ALGO"}</strong>
-                        </span>
-                        <br />
-                        <span>
-                            Min Balance: {isLoading ? "Loading..." : + ((accountInfo ? accountInfo["min-balance"] : 0) / 1000000).toFixed(2) + " ALGO"}
-                        </span>
-                    </div>
-                </div>
-            )
-        } else {
-            return (<h3>Hey Stranger...</h3>)
-        }
-    }
 
     const viewKeyModal = () => {
         return (
@@ -92,8 +75,14 @@ function App() {
             setisLoading(true)
             const fetchAssets = async () => {
                 try {
+                    if(isStale){
+                        console.log("Waiting for 4 seconds")
+                        await new Promise((resolve) => setTimeout(resolve, 14000));
+                    }
+                    console.log("Fetching Assets")
                     const accountInfo = await algodClient.accountInformation(address.addr).do();
                     setAccountInfo(accountInfo)
+                    console.log(accountInfo)
                     setisLoading(false)
                 } catch (error) {
                     console.error('Error fetching assets:', error);
@@ -101,9 +90,10 @@ function App() {
                 }
             }
             fetchAssets();
+            setIsStale(false);
         }
 
-    }, [address]);
+    }, [address, isStale]);
 
     const AboutMe = () => {
         return (
@@ -141,7 +131,23 @@ function App() {
                 (
                     <div className="card m-3">
                         <div className='card-header'>
-                            {welcomeAndGetBalance()}
+                        { address ? (
+                                <div className="d-flex align-items-center">
+                                    <h3>
+                                        {"Welcome " + address.addr.slice(0, 5) + "..."}
+                                    </h3>
+                                    <div className='ms-auto '>
+                                        <span>
+                                            Balance: <strong>{isLoading ? "Loading..." : + ((accountInfo ? accountInfo["amount"] : 0) / 1000000).toFixed(2) + " ALGO"}</strong>
+                                        </span>
+                                        <br />
+                                        <span>
+                                            Min Balance: {isLoading ? "Loading..." : + ((accountInfo ? accountInfo["min-balance"] : 0) / 1000000).toFixed(2) + " ALGO"}
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (<h3>Hey Stranger...</h3>)
+                        } 
                         </div>
                         <div className='card-body'>
                             {address && (
@@ -171,7 +177,7 @@ function App() {
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
-                                            <SendAlgo pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
+                                            <SendAlgo pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} handleIsStale={handleIsStale} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForCreateASA">
