@@ -12,7 +12,7 @@ const NavMain = ({ address, handleAddressUpdate,  viewKeyModalTrigger }) => {
             <div id="navbar_main_section">
             <nav className="navbar navbar-expand-md bg-dark border-bottom border-bottom-dark  sticky-top p-3 " data-bs-theme="dark" role="navigation">
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="https://github.com/sudo-Kunal-Mahajan"><h5 className=" mt-0 mb-0">REACT COMPONENT</h5></a>
+                    <a className="navbar-brand" href="/"><h5 className=" mt-0 mb-0">REACT COMPONENT</h5></a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                         data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">

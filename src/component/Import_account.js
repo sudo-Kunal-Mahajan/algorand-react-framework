@@ -10,11 +10,14 @@ const ImportAccount = ({ address, handleAddressUpdate }) => {
             return
         } else {
             setinputMnemonic(event.target.value);
-        }
-        
+        }        
     };
 
     const handleSubmittedMnemonic = () => {
+        if(inputMnemonic.split(" ").length!==25){
+            alert("Invalid Mnemonic");
+            return
+        }
         const keypair = algosdk.mnemonicToSecretKey(inputMnemonic);
         handleAddressUpdate({ addr: keypair.addr, mnemonic: inputMnemonic });
         setinputMnemonic("");

@@ -1,8 +1,9 @@
 import algosdk from "algosdk";
 import { algodClient } from "../utils/AlgorandUtils";
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
+    const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({ "recPub": "", "message": "", "amount": "" })
     const Warning_div = useRef(null);
     const TXID_div = useRef(null);
@@ -20,44 +21,55 @@ const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
         setFormData({ "recPub": "", "message": "", "amount": "" })
     }
     useEffect(() => {
-        txId && TXID_div.current.scrollIntoView({ behavior: "smooth" , block: 'center'});
-            
+        txId && TXID_div.current.scrollIntoView({ behavior: "smooth", block: 'center' });
+
         warning && Warning_div.current.scrollIntoView({ behavior: "smooth", block: 'center' });
 
         const timerId1 = setTimeout(() => {
             setTxId(null);
-          }, 5000);
-          const timerId2 = setTimeout(() => {
+        }, 5000);
+        const timerId2 = setTimeout(() => {
             setWarning(null);
-          }, 5000);
-          
-          return () => {
+        }, 5000);
+
+        return () => {
             clearTimeout(timerId1);
             clearTimeout(timerId2);
-          };
+        };
     }, [txId, warning])
 
     const handleSubmit = (event) => {
         event.preventDefault();
+        setSubmitting(true);
         if (maxAllowedSend <= (Math.round(formData.amount) * 1000000 + 1000)) {
             setWarning("Not Enough balance available!!!!")
-            return
-        } else {
-            sendAlgoUtil().then((result) => {
-                if (result !== -1) {
-                    setTxId(result.txId);
-                    clearForm();
-                    handleIsStale();
-                }
-            })
+            setSubmitting(false);
+        } else {            
+            sendAlogMainHandler()
         }
+        
 
     }
+    const sendAlogMainHandler = () => {
 
-    const sendAlgoUtil = async () => {
-
-        try {
-            const params = await algodClient.getTransactionParams().do();
+        const sendTransactionUtil = async (signedTxn) => {
+            try {
+                const txId = await algodClient.sendRawTransaction(signedTxn.blob).do();
+                await algosdk.waitForConfirmation(algodClient, txId.txId, 4)
+                setTxId(txId.txId);
+                clearForm();
+                handleIsStale();
+            }
+            catch (err) {
+                console.log(err);
+                setWarning(err.message);
+            }finally{
+                setSubmitting(false);
+            }
+        }
+        const HandleTransaction = async () => {
+            try{
+                const params = await algodClient.getTransactionParams().do();
             const txn = {
                 from: pub_key,
                 to: formData.recPub,
@@ -70,14 +82,16 @@ const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
                 note: algosdk.encodeObj(formData.message),
             };
             const signedTxn = algosdk.signTransaction(txn, sec_key);
-            // Submit the transaction
-            const txId = await algodClient.sendRawTransaction(signedTxn.blob).do();
-            return txId;
-        } catch (error) {
-            setWarning(error.message);
-            return -1;
+            await sendTransactionUtil(signedTxn)
+            }catch(err){
+                console.log(err);
+                setWarning(err.message);
+                setSubmitting(false);
+            }
+            
         }
 
+        HandleTransaction();
     }
     return (
         <>
@@ -90,7 +104,7 @@ const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
                                     <button className="btn-close float-end" onClick={() => setWarning(null)}></button>
                                     {warning}
                                 </div>
-                            </div>                            
+                            </div>
                         )}
 
                         {txId && (
@@ -116,7 +130,7 @@ const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
                                 <textarea className="form-control" name="message" id="messageInput" rows="3" value={formData.message} onChange={handleFormData}></textarea>
                             </div>
                             <div className="mb-3 row justify-content-center">
-                                <button type="submit" className="btn btn-primary col-4 mx-2">Submit</button>
+                                <button type="submit" className={`btn ${submitting ? 'btn-secondary' : 'btn-primary'} col-4 mx-2`} disabled={submitting}>{submitting? "Please Wait...":"Submit"}</button>
                                 <button type="button" onClick={clearForm} className="btn btn-warning col-4 mx-2">Clear</button>
                             </div>
                         </form>

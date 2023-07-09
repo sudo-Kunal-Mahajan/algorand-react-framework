@@ -75,11 +75,6 @@ function App() {
             setisLoading(true)
             const fetchAssets = async () => {
                 try {
-                    if(isStale){
-                        console.log("Waiting for 4 seconds")
-                        await new Promise((resolve) => setTimeout(resolve, 14000));
-                    }
-                    console.log("Fetching Assets")
                     const accountInfo = await algodClient.accountInformation(address.addr).do();
                     setAccountInfo(accountInfo)
                     console.log(accountInfo)
@@ -87,12 +82,12 @@ function App() {
                 } catch (error) {
                     console.error('Error fetching assets:', error);
                     setisLoading(false)
+                    setAccountInfo(null)
                 }
             }
             fetchAssets();
             setIsStale(false);
         }
-
     }, [address, isStale]);
 
     const AboutMe = () => {
