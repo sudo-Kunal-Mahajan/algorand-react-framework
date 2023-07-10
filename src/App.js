@@ -25,6 +25,10 @@ function App() {
        setIsStale(true)
     }
 
+    const HandleTrxSign =(builtTxn) =>{
+        const {sk} = algosdk.mnemonicToSecretKey(address.mnemonic);
+        return algosdk.signTransaction(builtTxn, sk);
+    }
     useEffect(() => {
         setAddress(localStorage.getItem("address") ? JSON.parse(localStorage.getItem("address")) : null)
     }, [])
@@ -168,15 +172,15 @@ function App() {
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForYourAccount">
-                                            <AssetDisplay publicAddress={address.addr} accountInfo={accountInfo}/>
+                                            <AssetDisplay pub_key={address.addr} accountInfo={accountInfo} handleIsStale={handleIsStale} HandleTrxSign={HandleTrxSign}/>
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForSendAlgo">
-                                            <SendAlgo pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} handleIsStale={handleIsStale} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
+                                            <SendAlgo pub_key={address.addr} HandleTrxSign={HandleTrxSign} handleIsStale={handleIsStale} maxAllowedSend={accountInfo && (accountInfo["amount"] - accountInfo["min-balance"])} />
                                         </div>
 
                                         <div role="tabpanel" className="card card-body bg-light tab-pane fade" id="collapseForCreateASA">
-                                            <CreateASA pub_key={address.addr} sec_key={algosdk.mnemonicToSecretKey(address.mnemonic).sk} />
+                                            <CreateASA pub_key={address.addr} HandleTrxSign={HandleTrxSign} />
                                         </div>
                                     </div>
                                 </>

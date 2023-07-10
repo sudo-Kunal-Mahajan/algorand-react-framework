@@ -2,7 +2,7 @@ import algosdk from "algosdk";
 import { algodClient } from "../utils/AlgorandUtils";
 import { useEffect, useState, useRef } from "react";
 
-const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
+const SendAlgo = ({ pub_key, HandleTrxSign, handleIsStale, maxAllowedSend }) => {
     const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({ "recPub": "", "message": "", "amount": "" })
     const Warning_div = useRef(null);
@@ -70,19 +70,19 @@ const SendAlgo = ({ pub_key, sec_key, handleIsStale, maxAllowedSend }) => {
         const HandleTransaction = async () => {
             try{
                 const params = await algodClient.getTransactionParams().do();
-            const txn = {
-                from: pub_key,
-                to: formData.recPub,
-                fee: params.fee,
-                amount: Math.round(parseFloat(formData.amount) * 1000000),
-                firstRound: params.firstRound,
-                lastRound: params.lastRound,
-                genesisID: params.genesisID,
-                genesisHash: params.genesisHash,
-                note: algosdk.encodeObj(formData.message),
-            };
-            const signedTxn = algosdk.signTransaction(txn, sec_key);
-            await sendTransactionUtil(signedTxn)
+                const txn = {
+                    from: pub_key,
+                    to: formData.recPub,
+                    fee: params.fee,
+                    amount: Math.round(parseFloat(formData.amount) * 1000000),
+                    firstRound: params.firstRound,
+                    lastRound: params.lastRound,
+                    genesisID: params.genesisID,
+                    genesisHash: params.genesisHash,
+                    note: algosdk.encodeObj(formData.message),
+                };
+                const signedTxn = HandleTrxSign(txn);
+                await sendTransactionUtil(signedTxn)
             }catch(err){
                 console.log(err);
                 setWarning(err.message);
