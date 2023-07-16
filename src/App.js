@@ -163,7 +163,7 @@ function App() {
                                             <a className="nav-link" data-bs-toggle="tab" aria-controls="collapseForSendAlgo" href="#collapseForSendAlgo">Send Algo</a>
                                         </li>
                                         <li className="nav-item" role="presentation">
-                                            <a className="nav-link disabled" data-bs-toggle="tab" aria-controls="collapseForCreateASA" href="#collapseForCreateASA">Create ASA</a>
+                                            <a className="nav-link" data-bs-toggle="tab" aria-controls="collapseForCreateASA" href="#collapseForCreateASA">Create ASA</a>
                                         </li>
                                     </ul>
                                     <div className="tab-content mt-1 mb-2">
