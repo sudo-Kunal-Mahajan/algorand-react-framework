@@ -17,11 +17,8 @@ This project is created as a guide/reference for devs to create UI for their Alg
 - Run `npm start` to start the project.
 
 
-## contact
-- [LinkedIn](https://www.linkedin.com/in/kunal-mahajan-8592a3212)
-- [Mail](mailto:destinier.kunal34@gmail.com)
 
-Let me know if you have any queries or suggestions. Send out a pull request if you want to contribute. 
+Send out a pull request if you want to contribute. 
 Starring the repo would be appreciated. 
 
 ## Donations
